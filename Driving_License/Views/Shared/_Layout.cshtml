@@ -25,7 +25,6 @@
 </head>
 
 <body>
-    @using Driving_License.Models.Accounts;
     @using Driving_License.Models;
     @using System.Text.Json;
     @{
@@ -70,7 +69,7 @@
                 <li> <a href="#">Liên hệ</a></li>
                 @if (@account is not null)
                 {
-                    <li><a href="/Home/EditInfo">@account.Username</a></li>
+                    <li><a href="/User">@account.Username</a></li>
                     <li><a href="/Login/logout">Đăng Xuất</a></li>
                 }
                 else
