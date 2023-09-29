@@ -1,7 +1,8 @@
 ﻿using Driving_License.Utils;
+using Driving_License.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Net.Mail;
 
 namespace Driving_License.Controllers
 {
@@ -13,9 +14,36 @@ namespace Driving_License.Controllers
         {
             _context = context;
         }
+
+        public async Task<PageResult<T>> GetPagedDataAsync<T>(IQueryable<T> query, int page, int pageSize)
+        {
+            //Get total number of rows in table
+            int totalCount = await query.CountAsync();
+
+            //Calculate total pages
+            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+            int takingNums = pageSize;
+            int skipNums = (page - 1) * pageSize;
+            if (totalCount < pageSize)
+            {
+                takingNums = totalCount;
+            }
+            List<T> items = await query.Skip(skipNums)
+                                       .Take(takingNums)
+                                       .ToListAsync();
+            return new PageResult<T>
+            {
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                PageNumber = page,
+                PageSize = pageSize,
+                Items = items
+            };
+        }
         public async Task<IActionResult> Index()
         {
-            ViewBag.Vehicles = _context.Vehicles.ToList();
+            
+            ViewBag.Vehicles = await _context.Vehicles.ToListAsync();
             return View("/Views/Rent.cshtml");
         }
 
@@ -25,7 +53,7 @@ namespace Driving_License.Controllers
             string brand = Form["brand"];
             string price = Form["price"];
             string keyword = Form["keyword"];
-            var query = _context.Vehicles.ToList();
+            var query = await _context.Vehicles.ToListAsync();
             if (!type.IsNullOrEmpty())
             {
                 query = query.Where(x => x.Type.Equals(type)).ToList();

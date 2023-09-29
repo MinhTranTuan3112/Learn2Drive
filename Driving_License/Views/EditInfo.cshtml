@@ -48,10 +48,28 @@
             <input type="text" name="Address" value="@user.Address">
 
             <label for="Avatar">Avatar:</label>
-            <input type="file" name="Avatar" value="@user.Address" accept="jpg/png/jpeg/webp">
-            <button>Save</button>
+            <input type="file" name="Avatar" id="Avatar"value="@user.Address" accept="image/*" />
+            <button onclick="checkFileType()">Save</button>
         </form>
 
     </div>
+
+    <script>
+        function checkFileType() {
+            const fileInput = document.getElementById("Avatar");
+            const file = fileInput.files[0];
+
+            if (file) {
+                const fileType = file.type;
+                if (fileType.includes("video/")) {
+                    alert("Please just upload image file");
+                } else {
+                    return;
+                }
+            } else {
+                alert("No file selected.");
+            }
+        }
+    </script>
 </body>
-</html>>
+</html>
