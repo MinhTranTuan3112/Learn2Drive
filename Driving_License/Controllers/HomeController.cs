@@ -41,6 +41,9 @@ namespace Driving_License.Controllers
         {
             return View();
         }
+        public IActionResult Error404() {
+            return View("~/Views/404NotFound.cshtml");
+        }
         public IActionResult Intro()
         {
             ViewBag.icon_link = "https://cdn-icons-png.flaticon.com/512/3930/3930246.png";
