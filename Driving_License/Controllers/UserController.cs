@@ -1,6 +1,7 @@
 ﻿using Driving_License.Models;
 using Driving_License.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.SqlServer.Server;
 using System.Text.Json;
@@ -15,12 +16,12 @@ namespace Driving_License.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));            
+            var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
             if (usersession.Role.Equals("user"))
             {
-                var user = _context.Users.FirstOrDefault(x => x.AccountId.Equals(usersession.AccountId));
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
                 ViewBag.user = user;
                 return View("/Views/EditInfo.cshtml");
             }
@@ -28,19 +29,20 @@ namespace Driving_License.Controllers
             {
                 return View("/Views/EditInfo.cshtml");
             }
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Index", "Home");
         }
-        public IActionResult EditInfo(IFormCollection Form)
+        [HttpPost]
+        public async Task<IActionResult> EditInfo(IFormCollection form)
         {
-            string FullName = Form["FullName"];
-            string BirthDate = Form["BirthDate"];
-            string Email = Form["Email"];
-            string Nationality = Form["Nationality"];
-            string PhoneNumber = Form["PhoneNumber"];
-            string Address = Form["Address"];
-            var filesend = Form.Files["Avatar"];
+            string FullName = form["FullName"];
+            string BirthDate = form["BirthDate"];
+            string Email = form["Email"];
+            string Nationality = form["Nationality"];
+            string PhoneNumber = form["PhoneNumber"];
+            string Address = form["Address"];
+            var filesend = form.Files["Avatar"];
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
-            var user = _context.Users.FirstOrDefault(x => x.AccountId.Equals(usersession.AccountId));
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.AccountId.Equals(usersession.AccountId));
 
             user.FullName = !string.IsNullOrEmpty(FullName) ? FullName : null;
             user.BirthDate = !BirthDate.IsNullOrEmpty() ? DateTime.Parse(BirthDate) : null;
@@ -48,17 +50,27 @@ namespace Driving_License.Controllers
             user.Nationality = !string.IsNullOrEmpty(Nationality) ? Nationality : null;
             user.PhoneNumber = !string.IsNullOrEmpty(PhoneNumber) ? PhoneNumber : null;
             user.Address = !string.IsNullOrEmpty(Address) ? Address : null;
-            if (filesend != null)
+            if (filesend is not null)
             {
-                var filePath = Path.Combine("wwwroot/img/Avatar",user.UserId.ToString() + Path.GetExtension(filesend.FileName));
+                var filePath = Path.Combine("wwwroot/img/Avatar", user.UserId.ToString() + Path.GetExtension(filesend.FileName));
                 using var filestream = new FileStream(filePath, FileMode.Create);
-                filesend.CopyTo(filestream);
-                user.Avatar = user.UserId.ToString() + Path.GetExtension(filesend.FileName);
-                filestream.Close();
+                try
+                {
+                    await filesend.CopyToAsync(filestream);
+                    user.Avatar = user.UserId.ToString() + Path.GetExtension(filesend.FileName);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Update user error: " + ex.Message);
+                }
+                finally
+                {
+                    filestream.Close();
+                }
             }
             _context.Users.Update(user);
-            _context.SaveChanges();
-            return RedirectToAction("Index","User");
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "User");
         }
     }
 }
