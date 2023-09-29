@@ -66,7 +66,7 @@ namespace Driving_License.Repositories
                         QuestionText = reader["QuestionText"] as string,
                         UserAnswer = reader["UserAnswer"] as string,
                         CorrectAnswer = reader["CorrectAnswer"] as string,
-                        IsCorrect = reader["IsCorrect"] != DBNull.Value ? (bool)reader["IsCorrect"] : false  // Default to 0 if DBNull
+                        IsCorrect = reader["IsCorrect"] != DBNull.Value ? (int)reader["IsCorrect"] : 0  // Default to 0 if DBNull
                     });
                 }
             }

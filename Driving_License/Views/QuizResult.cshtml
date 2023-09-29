@@ -96,7 +96,7 @@
                             <td>@question.UserAnswer</td>
                             <td>@question.CorrectAnswer</td>
                             <td class="result">
-                                @if (@question.IsCorrect)
+                                @if (@question.IsCorrect == 1)
                                 {
                                     <svg style="color: green;display: block;padding: 5px;" xmlns="http://www.w3.org/2000/svg"
                                         fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
