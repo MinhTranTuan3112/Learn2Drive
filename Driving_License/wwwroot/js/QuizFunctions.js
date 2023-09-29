@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
 document.querySelector('.submit-button').addEventListener('click', async function () {
     clearInterval(timer);
     await SaveQuestion();
+    sessionStorage.clear();
     submitQuiz();
 });
 
