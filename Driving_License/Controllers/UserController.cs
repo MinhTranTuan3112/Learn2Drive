@@ -18,16 +18,17 @@ namespace Driving_License.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            const string UserProfileViewPath = "~/Views/EditInfo.cshtml";
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
             if (usersession.Role.Equals("user"))
             {
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
                 ViewBag.user = user;
-                return View("/Views/EditInfo.cshtml");
+                return View(UserProfileViewPath);
             }
             else if (usersession.Role.Equals("lecturer"))
             {
-                return View("/Views/EditInfo.cshtml");
+                return View(UserProfileViewPath);
             }
             return RedirectToAction("Index", "Home");
         }
