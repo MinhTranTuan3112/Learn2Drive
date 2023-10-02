@@ -1,9 +1,12 @@
 @using Driving_License.Models;
 @{
-    Layout = "~/Views/_Layout.cshmtl";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "L2D - Thông tin của (User)";
     var user = ViewBag.user as User;
     bool hasImage = (user is not null && !string.IsNullOrEmpty(user.Avatar));
+    string imagePath = (hasImage) ? $"/img/Avatar/{user.Avatar}" : null;
+    bool hasBirthDate = (user is not null && user.BirthDate.HasValue);
+    string FormattedBirthDate = (hasBirthDate) ? string.Format("{0:yyyy-MM-dd}", user.BirthDate) : null;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -31,11 +34,11 @@
                         </div>
                         <div class="card-body text-center">
                             <img class="img-account-profile rounded-circle mb-2"
-                                src="@((hasImage ? user.Avatar : "img/anonymous-avatar.jpg"))" alt="avatar">
+                                src="@((hasImage ? imagePath : "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"))" alt="avatar">
                             <div class="card-body-content text-muted mb-4">
                                 JPG or PNG (less than 5MB)
                             </div>
-                            <input type="file" name="Avatar" accept="jpg/png/jpeg/webp" class="form-control">
+                            <input type="file" name="Avatar" oninput="changeAvatar(this);" accept="jpg/png/jpeg/webp" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -91,7 +94,7 @@
                             </div>
 
                             <div class="form-floating mb-3">
-                                <input type="text" class="form-control" name="CCCD" id="CCCD" placeholder="CCCD">
+                                <input type="text" class="form-control" name="CCCD" value="@user.Cccd" id="CCCD" placeholder="CCCD">
                                 <label for="CCCD" class="form-label">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="mb-1 bi bi-person-vcard" viewBox="0 0 16 16">
@@ -120,7 +123,7 @@
                                 </div>
                                 <!--ENTER TÊN-->
                                 <div class="form-floating col-6">
-                                    <input class="form-control" id="BirthDate" name="BirthDate" type="date" value="@user.BirthDate"
+                                    <input class="form-control" id="BirthDate" name="BirthDate" type="date" value= "@((hasBirthDate ? FormattedBirthDate : ""))"
                                         placeholder="Enter Birthdate">
                                     <label class="form-label" for="BirthDate">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
