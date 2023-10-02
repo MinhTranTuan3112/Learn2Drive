@@ -24,13 +24,8 @@ namespace Driving_License.Controllers
             {
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
                 ViewBag.user = user;
-                return View(UserProfileViewPath);
             }
-            else if (usersession.Role.Equals("lecturer"))
-            {
-                return View(UserProfileViewPath);
-            }
-            return RedirectToAction("Index", "Home");
+            return View(UserProfileViewPath);
         }
         [HttpPost]
         public async Task<IActionResult> EditInfo(IFormCollection form)
