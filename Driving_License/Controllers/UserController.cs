@@ -1,4 +1,5 @@
-﻿using Driving_License.Models;
+﻿using Driving_License.Filters;
+using Driving_License.Models;
 using Driving_License.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using System.Text.Json;
 
 namespace Driving_License.Controllers
 {
+    [LoginFilter]
     public class UserController : Controller
     {
         private readonly DrivingLicenseContext _context;
@@ -18,38 +20,39 @@ namespace Driving_License.Controllers
         }
         public async Task<IActionResult> Index()
         {
+            const string UserProfileViewPath = "~/Views/UserProfile.cshtml";
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
             if (usersession.Role.Equals("user"))
             {
                 var user = await _context.Users.FirstOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
                 ViewBag.user = user;
-                return View("/Views/EditInfo.cshtml");
             }
-            else if (usersession.Role.Equals("lecturer"))
-            {
-                return View("/Views/EditInfo.cshtml");
-            }
-            return RedirectToAction("Index", "Home");
+            return View(UserProfileViewPath);
         }
+
         [HttpPost]
         public async Task<IActionResult> EditInfo(IFormCollection form)
         {
             string FullName = form["FullName"];
-            string BirthDate = form["BirthDate"];
             string Email = form["Email"];
             string Nationality = form["Nationality"];
-            string PhoneNumber = form["PhoneNumber"];
+            string CCCD = form["CCCD"];
             string Address = form["Address"];
+            string PhoneNumber = form["PhoneNumber"];
+            string BirthDate = form["BirthDate"];
+            System.Console.WriteLine("User birthdate: " + BirthDate);
             var filesend = form.Files["Avatar"];
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
             var user = await _context.Users.FirstOrDefaultAsync(u => u.AccountId.Equals(usersession.AccountId));
 
-            user.FullName = !string.IsNullOrEmpty(FullName) ? FullName : null;
+            user.FullName = FullName;
             user.BirthDate = !BirthDate.IsNullOrEmpty() ? DateTime.Parse(BirthDate) : null;
-            user.Email = !string.IsNullOrEmpty(Email) ? Email : null;
-            user.Nationality = !string.IsNullOrEmpty(Nationality) ? Nationality : null;
-            user.PhoneNumber = !string.IsNullOrEmpty(PhoneNumber) ? PhoneNumber : null;
-            user.Address = !string.IsNullOrEmpty(Address) ? Address : null;
+            user.Email = Email;
+            user.Nationality = Nationality;
+            user.PhoneNumber = PhoneNumber;
+            user.Address = Address;
+            user.Cccd = CCCD;
+
             if (filesend is not null)
             {
                 var filePath = Path.Combine("wwwroot/img/Avatar", user.UserId.ToString() + Path.GetExtension(filesend.FileName));
