@@ -1,19 +1,14 @@
-<<<<<<< HEAD
-﻿using Driving_License.Utils;
-=======
+//using Driving_License.Models;
+//using Driving_License.Models.Users;
 ﻿using Driving_License.Models;
 using Driving_License.Utils;
->>>>>>> 1c75e91904a6b656cac7a7f3a128c2b71d2be01d
 using Driving_License.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-<<<<<<< HEAD
-=======
 using Driving_License.Filters;
 using System.Net.Mail;
 using System.Text.Json;
->>>>>>> 1c75e91904a6b656cac7a7f3a128c2b71d2be01d
 
 namespace Driving_License.Controllers
 {
@@ -54,11 +49,6 @@ namespace Driving_License.Controllers
         }
         public async Task<IActionResult> Index()
         {
-<<<<<<< HEAD
-            
-            ViewBag.Vehicles = await _context.Vehicles.ToListAsync();
-            return View("/Views/Rent.cshtml");
-=======
             List<Vehicle> VehicleList = null;
             var jsonstring = TempData["vehiclelist"] as string;
             if (!jsonstring.IsNullOrEmpty())
@@ -74,7 +64,6 @@ namespace Driving_License.Controllers
             rentViewModel.BrandList = await _context.Vehicles.Select(vehicle => vehicle.Brand).Distinct().ToListAsync();
             rentViewModel.TypeList = await _context.Vehicles.Select(vehicle => vehicle.Type).Distinct().ToListAsync();
             return View("~/Views/Rent.cshtml", rentViewModel);
->>>>>>> 1c75e91904a6b656cac7a7f3a128c2b71d2be01d
         }
 
         [HttpPost]
@@ -83,12 +72,8 @@ namespace Driving_License.Controllers
             string type = Form["type"];
             string brand = Form["brand"];
             string price = Form["price"];
-            string keyword = Form["keyword"];
-<<<<<<< HEAD
-            var query = await _context.Vehicles.ToListAsync();
-=======
+            string keyword = Form["keyword"]; 
             var query = _context.Vehicles.AsQueryable();
->>>>>>> 1c75e91904a6b656cac7a7f3a128c2b71d2be01d
             if (!type.IsNullOrEmpty())
             {
                 query = query.Where(vehicle => vehicle.Type.Equals(type));
@@ -103,9 +88,9 @@ namespace Driving_License.Controllers
             }
             if (!keyword.IsNullOrEmpty())
             {
-                string pattern = string.Format("name like '%%{0}%%'", keyword);
-                // query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
-                query = query.Where(vehicle => vehicle.Name.Contains(pattern));
+                /*string pattern = string.Format("name like '%%{0}%%'", keyword);*/
+                query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
+                /*query = query.Where(vehicle => vehicle.Name.Contains(pattern));*/
             }
             var VehicleList = await query.OrderBy(vehicle => vehicle.Name).ToListAsync();
             TempData["vehiclelist"] = JsonSerializer.Serialize(VehicleList);

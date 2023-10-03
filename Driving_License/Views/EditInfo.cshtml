@@ -31,10 +31,16 @@
         <form action="/User/EditInfo" method="post" enctype="multipart/form-data">
             <label for="FullName">Full Name:</label>
             <input type="text" name="FullName" value="@user.FullName">
-
-            <label for="BirthDate">Birth Date:</label>
-            <input type="date" name="BirthDate" value="@user.BirthDate.Value.ToString("yyyy-MM-dd")">
-
+            @if (@user.BirthDate.HasValue)
+            {
+                <label for="BirthDate">Birth Date:</label>
+                <input type="date" name="BirthDate" value="@user.BirthDate.Value.ToString("yyyy-MM-dd")">
+            }
+            else
+            {
+                <label for="BirthDate">Birth Date:</label>
+                <input type="date" name="BirthDate">
+            }
             <label for="Email">Email:</label>
             <input type="email" name="Email" value="@user.Email">
 
@@ -48,6 +54,8 @@
             <input type="text" name="Address" value="@user.Address">
 
             <label for="Avatar">Avatar:</label>
+            <input type="file" name="Avatar" accept="Image/*">
+            <button>Save</button>
         </form>
 
     </div>
