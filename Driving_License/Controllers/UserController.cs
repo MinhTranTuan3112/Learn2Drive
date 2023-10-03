@@ -75,5 +75,15 @@ namespace Driving_License.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "User");
         }
+
+        public async Task<IActionResult> ViewExamForm()
+        {
+            var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.AccountId.Equals(usersession.AccountId));
+            ViewBag.user = user;
+            return View("~/Views/ExamResigter.cshtml");
+        }
+
+        
     }
 }
