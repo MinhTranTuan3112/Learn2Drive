@@ -22,4 +22,5 @@ public partial class Rent
     public virtual User User { get; set; }
 
     public virtual Vehicle Vehicle { get; set; }
+
 }

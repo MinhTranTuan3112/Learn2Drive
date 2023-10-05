@@ -7,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using Driving_License.Filters;
 using System.Net.Mail;
 using System.Text.Json;
+using X.PagedList;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.Extensions.Logging;
 
 namespace Driving_License.Controllers
 {
@@ -19,8 +22,10 @@ namespace Driving_License.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
+            page = page < 1 ? 1 : page;
+            int pagesize = 6;
             List<Vehicle> VehicleList = null;
             var jsonstring = TempData["vehiclelist"] as string;
             if (!jsonstring.IsNullOrEmpty())
@@ -32,7 +37,8 @@ namespace Driving_License.Controllers
                 VehicleList = await _context.Vehicles.ToListAsync();
             }
             var rentViewModel = new RentViewModel();
-            rentViewModel.VehicleList.AddRange(VehicleList);
+            ViewBag.vehiclecount = VehicleList.Count;
+            rentViewModel.VehicleList.AddRange(VehicleList.ToPagedList(page, pagesize));
             rentViewModel.BrandList = await _context.Vehicles.Select(vehicle => vehicle.Brand).Distinct().ToListAsync();
             rentViewModel.TypeList = await _context.Vehicles.Select(vehicle => vehicle.Type).Distinct().ToListAsync();
             return View("~/Views/Rent.cshtml", rentViewModel);
@@ -60,13 +66,55 @@ namespace Driving_License.Controllers
             }
             if (!keyword.IsNullOrEmpty())
             {
-                string pattern = string.Format("name like '%%{0}%%'", keyword);
-                // query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
-                query = query.Where(vehicle => vehicle.Name.Contains(pattern));
+                /*string pattern = string.Format("name like '%%{0}%%'", keyword);*/
+                 query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
+                //query = query.Where(vehicle => vehicle.Name.Contains(pattern));
             }
             var VehicleList = await query.OrderBy(vehicle => vehicle.Name).ToListAsync();
             TempData["vehiclelist"] = JsonSerializer.Serialize(VehicleList);
+            TempData["keyword"] = JsonSerializer.Serialize(keyword);
             return RedirectToAction("Index", "Rent");
         }
+        public async Task<IActionResult> RentDetail(Guid carid)
+        {
+            var vehicle = _context.Vehicles.FirstOrDefault(x => x.VehicleId.Equals(carid));
+            return View("/Views/RentDetail.cshtml", vehicle);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InsertNewRent(IFormCollection form)
+        {
+            string vechicleid = form["vehicleid"];
+            string date1 = form["party1"];
+            string date2 = form["party2"];
+            string totalprice = form["totalprice"];
+            var UserIDString = await getUserIDFromSession();
+            var RentOrder = new Rent()
+            {
+                RentId = new Guid(),
+                UserId = Guid.Parse(UserIDString),
+                VehicleId = Guid.Parse(vechicleid),
+                StartTime = TimeSpan.Parse(date1),
+                EndTime = TimeSpan.Parse(date2),
+                Status = "false",
+                TotalRentPrice = decimal.Parse(totalprice),
+            };
+            await _context.Rents.AddAsync(RentOrder);
+            await _context.SaveChangesAsync();
+
+            return View();
+        }
+        public async Task<string> getUserIDFromSession()
+        {
+            string AccountID = string.Empty;
+            var usersession = HttpContext.Session.GetString("usersession");
+            if (!string.IsNullOrEmpty(usersession))
+            {
+                AccountID = JsonSerializer.Deserialize<Account>(usersession).AccountId.ToString();
+            }
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.AccountId.ToString().Equals(AccountID));
+            return (user is not null) ? user.UserId.ToString() : string.Empty;
+        }
     }
+
 }
