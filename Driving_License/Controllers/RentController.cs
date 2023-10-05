@@ -99,7 +99,7 @@ namespace Driving_License.Controllers
                 Status = "false",
                 TotalRentPrice = decimal.Parse(totalprice),
             };
-            await _context.Rents.AddAsync(RentOrder);
+            //await _context.Rents.AddAsync(RentOrder);
             await _context.SaveChangesAsync();
 
             return View();
