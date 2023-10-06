@@ -33,6 +33,7 @@
     --fs-7: 0.625rem;
     --fw-400: 400;
     --fw-600: 600;
+    --extraColor: #d90429;
     /**
      * transition
      */
@@ -153,7 +154,7 @@ a {
 
 .btn {
     position: relative;
-    background: var(--background, var(--carolina-blue));
+    background: var(--background, var(--extraColor));
     color: var(--color, var(--white));
     min-width: var(--width, 40px);
     min-height: var(--height, 40px);
@@ -333,7 +334,7 @@ a {
 }
 
 .input-field:focus {
-    outline-color: var(--carolina-blue);
+    outline-color: var(--extraColor);
 }
 
 .input-field::placeholder {
@@ -382,7 +383,7 @@ a {
 }
 
 .rent-car-link:is(:hover, :focus) ion-icon {
-    color: var(--carolina-blue);
+    color: var(--extraColor);
 }
 
 .rent-car-list {
@@ -407,7 +408,7 @@ a {
 }
 
 .rent-car-card .card-banner>img {
-    height: 100%;
+    height: 258px;
     object-fit: cover;
 }
 
@@ -437,7 +438,7 @@ a {
 }
 
 .rent-car-card .card-title>a:is(:hover, :focus) {
-    color: var(--carolina-blue);
+    color: var(--extraColor);
 }
 
 .rent-car-card .year {
@@ -445,7 +446,7 @@ a {
     font-size: var(--fs-6);
     font-weight: var(--fw-600);
     padding: 3px 12px;
-    border: 2px dashed hsla(204, 91%, 53%, 0.4);
+    border: 2px dashed hsla(0, 100%, 49%, 0.573);
     border-radius: var(--radius-14);
 }
 
@@ -456,6 +457,7 @@ a {
     padding-bottom: 15px;
     border-bottom: 1px solid hsla(0, 0%, 0%, 0.1);
     margin-bottom: 15px;
+    height: 114px;
 }
 
 .rent-car-card .card-list-item {
@@ -466,7 +468,7 @@ a {
 
 .rent-car-card .card-list-item ion-icon {
     font-size: 20px;
-    color: var(--carolina-blue);
+    color: var(--extraColor);
     --ionicon-stroke-width: 38px;
 }
 
@@ -647,5 +649,10 @@ a {
             .rent-car-list {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
+            .page-link{
+                color: var(--extraColor);
+            }
         }
         @import url('https://rsms.me/inter/inter-ui.css');
+    }
+}
