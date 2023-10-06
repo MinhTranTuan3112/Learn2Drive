@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using Driving_License.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace Driving_License.Utils;
 
 public partial class DrivingLicenseContext : DbContext
@@ -48,7 +49,7 @@ public partial class DrivingLicenseContext : DbContext
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.AccountId).HasName("PK__Account__349DA58661B4D981");
+            entity.HasKey(e => e.AccountId).HasName("PK__Account__349DA5869FC68414");
 
             entity.ToTable("Account");
 
@@ -62,7 +63,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Answer>(entity =>
         {
-            entity.HasKey(e => e.AnswerId).HasName("PK__Answer__D4825024B4D1A15D");
+            entity.HasKey(e => e.AnswerId).HasName("PK__Answer__D4825024748541A9");
 
             entity.ToTable("Answer");
 
@@ -78,7 +79,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Attempt>(entity =>
         {
-            entity.HasKey(e => e.AttemptId).HasName("PK__Attempt__891A6886FA026F72");
+            entity.HasKey(e => e.AttemptId).HasName("PK__Attempt__891A688603649307");
 
             entity.ToTable("Attempt");
 
@@ -104,7 +105,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<AttemptDetail>(entity =>
         {
-            entity.HasKey(e => e.AttemptDetailId).HasName("PK__AttemptD__D271E1306481E7F8");
+            entity.HasKey(e => e.AttemptDetailId).HasName("PK__AttemptD__D271E1307FF886D0");
 
             entity.ToTable("AttemptDetail");
 
@@ -131,7 +132,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<License>(entity =>
         {
-            entity.HasKey(e => e.LicenseId).HasName("PK__License__72D600A2DDCEE84B");
+            entity.HasKey(e => e.LicenseId).HasName("PK__License__72D600A2BAE2963C");
 
             entity.ToTable("License");
 
@@ -143,7 +144,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Question>(entity =>
         {
-            entity.HasKey(e => e.QuestionId).HasName("PK__Question__0DC06F8CCA53C590");
+            entity.HasKey(e => e.QuestionId).HasName("PK__Question__0DC06F8C6792E726");
 
             entity.ToTable("Question");
 
@@ -160,7 +161,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Quiz>(entity =>
         {
-            entity.HasKey(e => e.QuizId).HasName("PK__Quiz__8B42AE6E2BDA0241");
+            entity.HasKey(e => e.QuizId).HasName("PK__Quiz__8B42AE6E51E9B786");
 
             entity.ToTable("Quiz");
 
@@ -187,7 +188,7 @@ public partial class DrivingLicenseContext : DbContext
                         .HasConstraintName("FK__Have__QuizID__5CD6CB2B"),
                     j =>
                     {
-                        j.HasKey("QuizId", "QuestionId").HasName("PK__Have__5B9EA89676EE2993");
+                        j.HasKey("QuizId", "QuestionId").HasName("PK__Have__5B9EA896C9466791");
                         j.ToTable("Have");
                         j.IndexerProperty<int>("QuizId").HasColumnName("QuizID");
                         j.IndexerProperty<int>("QuestionId").HasColumnName("QuestionID");
@@ -196,13 +197,15 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Rent>(entity =>
         {
-            entity.HasKey(e => e.RentId).HasName("PK__Rent__783D4015BC12F809");
+            entity.HasKey(e => e.RentId).HasName("PK__Rent__783D40150B0DA681");
 
             entity.ToTable("Rent");
 
             entity.Property(e => e.RentId)
                 .HasDefaultValueSql("(newid())")
                 .HasColumnName("RentID");
+            entity.Property(e => e.EndDate).HasColumnType("datetime");
+            entity.Property(e => e.StartDate).HasColumnType("datetime");
             entity.Property(e => e.Status)
                 .HasMaxLength(100)
                 .HasColumnName("status");
@@ -225,7 +228,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Schedule>(entity =>
         {
-            entity.HasKey(e => e.ScheduleId).HasName("PK__Schedule__9C8A5B690702BD60");
+            entity.HasKey(e => e.ScheduleId).HasName("PK__Schedule__9C8A5B6907EC60E5");
 
             entity.ToTable("Schedule");
 
@@ -263,7 +266,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Teacher>(entity =>
         {
-            entity.HasKey(e => e.TeacherId).HasName("PK__Teacher__EDF2594403DED31D");
+            entity.HasKey(e => e.TeacherId).HasName("PK__Teacher__EDF25944F9C874CB");
 
             entity.ToTable("Teacher");
 
@@ -284,7 +287,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC53A13230");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCAC612BB782");
 
             entity.Property(e => e.UserId)
                 .HasDefaultValueSql("(newid())")
@@ -309,7 +312,7 @@ public partial class DrivingLicenseContext : DbContext
 
         modelBuilder.Entity<Vehicle>(entity =>
         {
-            entity.HasKey(e => e.VehicleId).HasName("PK__Vehicle__476B54B2280B9BE6");
+            entity.HasKey(e => e.VehicleId).HasName("PK__Vehicle__476B54B21018CBC0");
 
             entity.ToTable("Vehicle");
 

@@ -1,6 +1,6 @@
 //using Driving_License.Models;
 //using Driving_License.Models.Users;
-﻿using Driving_License.Models;
+using Driving_License.Models;
 using Driving_License.Utils;
 using Driving_License.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using Driving_License.Filters;
 using System.Net.Mail;
 using System.Text.Json;
+using X.PagedList;
+using Microsoft.AspNetCore.Mvc.Razor.Compilation;
+using Microsoft.Extensions.Logging;
 
 namespace Driving_License.Controllers
 {
@@ -21,34 +24,10 @@ namespace Driving_License.Controllers
         {
             _context = context;
         }
-
-        public async Task<PageResult<T>> GetPagedDataAsync<T>(IQueryable<T> query, int page, int pageSize)
+        public async Task<IActionResult> Index(int page = 1)
         {
-            //Get total number of rows in table
-            int totalCount = await query.CountAsync();
-
-            //Calculate total pages
-            int totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
-            int takingNums = pageSize;
-            int skipNums = (page - 1) * pageSize;
-            if (totalCount < pageSize)
-            {
-                takingNums = totalCount;
-            }
-            List<T> items = await query.Skip(skipNums)
-                                       .Take(takingNums)
-                                       .ToListAsync();
-            return new PageResult<T>
-            {
-                TotalCount = totalCount,
-                TotalPages = totalPages,
-                PageNumber = page,
-                PageSize = pageSize,
-                Items = items
-            };
-        }
-        public async Task<IActionResult> Index()
-        {
+            page = page < 1 ? 1 : page;
+            int pagesize = 6;
             List<Vehicle> VehicleList = null;
             var jsonstring = TempData["vehiclelist"] as string;
             if (!jsonstring.IsNullOrEmpty())
@@ -60,7 +39,8 @@ namespace Driving_License.Controllers
                 VehicleList = await _context.Vehicles.ToListAsync();
             }
             var rentViewModel = new RentViewModel();
-            rentViewModel.VehicleList.AddRange(VehicleList);
+            ViewBag.vehiclecount = VehicleList.Count;
+            rentViewModel.VehicleList.AddRange(VehicleList.ToPagedList(page, pagesize));
             rentViewModel.BrandList = await _context.Vehicles.Select(vehicle => vehicle.Brand).Distinct().ToListAsync();
             rentViewModel.TypeList = await _context.Vehicles.Select(vehicle => vehicle.Type).Distinct().ToListAsync();
             return View("~/Views/Rent.cshtml", rentViewModel);
@@ -89,12 +69,51 @@ namespace Driving_License.Controllers
             if (!keyword.IsNullOrEmpty())
             {
                 /*string pattern = string.Format("name like '%%{0}%%'", keyword);*/
-                query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
-                /*query = query.Where(vehicle => vehicle.Name.Contains(pattern));*/
+                 query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
+                //query = query.Where(vehicle => vehicle.Name.Contains(pattern));
             }
             var VehicleList = await query.OrderBy(vehicle => vehicle.Name).ToListAsync();
             TempData["vehiclelist"] = JsonSerializer.Serialize(VehicleList);
+            TempData["keyword"] = JsonSerializer.Serialize(keyword);
             return RedirectToAction("Index", "Rent");
         }
+        public async Task<IActionResult> RentDetail(Guid carid)
+        {
+            var vehicle = _context.Vehicles.FirstOrDefault(x => x.VehicleId.Equals(carid));
+            return View("/Views/RentDetail.cshtml", vehicle);
+        }
+
+        public async Task<IActionResult> InsertNewRent(IFormCollection form)
+        {
+            string vechicleid = form["vechicleid"];
+            string date1 = form["partydate"];
+            string date2 = form["partydate2"];
+            string totalpriceInput = form["totalpriceInput"];
+            var UserIDString = await getUserIDFromSession();
+            
+            Rent RentOrder = new Rent()
+            {
+                RentId = new Guid(),
+                UserId = Guid.Parse(UserIDString),
+                VehicleId = Guid.Parse(vechicleid),
+                StartDate = DateTime.Parse(date1),
+                EndDate = DateTime.Parse(date2),
+                Status = "false",
+                TotalRentPrice = decimal.Parse(totalpriceInput),
+            };
+            await _context.Rents.AddAsync(RentOrder);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index","Rent");
+        }
+        public async Task<string> getUserIDFromSession()
+        {
+            string AccountID = string.Empty;
+            var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
+
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.AccountId.Equals(usersession.AccountId));
+            return (user is not null) ? user.UserId.ToString() : string.Empty;
+        }
     }
+
 }

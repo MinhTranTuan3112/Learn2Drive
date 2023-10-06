@@ -11,9 +11,9 @@ public partial class Rent
 
     public Guid? UserId { get; set; }
 
-    public TimeSpan? StartTime { get; set; }
+    public DateTime? StartDate { get; set; }
 
-    public TimeSpan? EndTime { get; set; }
+    public DateTime? EndDate { get; set; }
 
     public decimal? TotalRentPrice { get; set; }
 

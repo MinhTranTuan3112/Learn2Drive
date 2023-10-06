@@ -1,7 +1,6 @@
 ﻿using Driving_License.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Driving_License.Models;
 namespace Driving_License.Controllers
 {
     public class AdminController : Controller
