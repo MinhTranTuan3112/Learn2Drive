@@ -109,7 +109,7 @@
                             </div>
                         </div>
                     </div>
-                    <form action="/Rent/InsertNewRent" method="post">
+                    <form action="/Rent/InsertNewRent" method="post" class="rentForm">
                         <div class="sidebar-detail mt-3">
                             <div class="rent-box shadow-lg p-3 mb-5 bg-body-tertiary rounded" id="cardetail"
                                  style="position: relative;">
@@ -141,7 +141,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                <button class="btn btn-primary btn--m width-100" type="submit">
+                                <button class="btn btn-primary btn--m width-100 submit-btn" type="submit">
                                     CHỌN THUÊ
                                 </button>
                             </div>
@@ -218,7 +218,7 @@
             console.log('Rent price: ' + RentPrice);
             const price = (hoursDifference * RentPrice) + (minutesDifference / 60 * RentPrice);
             console.log('Price: ' + price);
-            document.querySelector('.finalcost').textContent = price.toString() + " VNĐ";
+            document.querySelector('.finalcost').textContent = price.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".").toString() + " VNĐ";
             document.getElementById('totalpriceInput').value = price.toString(); 
         }
     </script>
