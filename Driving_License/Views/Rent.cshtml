@@ -6,6 +6,8 @@
 
 @{
     ViewData["Title"] = "L2D - Thuê xe";
+    int currentPage = (int)ViewBag.currentPage;
+    int totalPageCount = (int)ViewBag.totalPage;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -14,12 +16,12 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L2D - Rent car</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&family=Open+Sans&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="~/css/Rentpage.css">
+    <title>L2D - Rent car</title>
 </head>
 
 
@@ -162,25 +164,39 @@
         </article>
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="" tabindex="-1" aria-disabled="true">Previous</a>
-                </li>
+                <button class="page-link" onclick="prevPage();">Previous</button>
                 @{
                     int count = (@ViewBag.vehiclecount / 6) + 1;
                 }
-                @for (var i = 1;i <= count;i++)
+                @for (var i = 1; i <= count; i++)
                 {
                     <li class="page-item"><a class="page-link" href="?page=@i">@i</a></li>
                 }
-                    <a class="page-link" href="">Next</a>
-                </li>
+                <button class="page-link" onclick="nextPage();">Next</button>
             </ul>
         </nav>
     </main>
-    
-    <!--
-      - ionicon link
-    -->
+
+    <script>
+        var currentPage = @currentPage;
+        var totalPageCount = @totalPageCount;
+        function nextPage() {
+            if (currentPage === totalPageCount) {
+                window.location = '/Rent/Index?page=1';
+                return;
+            }
+            var nextPage = parseInt(currentPage) + 1;
+            window.location = '/Rent/Index?page=' + nextPage;
+        }
+        function prevPage() {
+            if (currentPage <= 1) {
+                window.location = '/Rent/Index?page=' + parseInt(totalPageCount);
+                return;
+            }
+            var prevPage = parseInt(currentPage) - 1;
+            window.location = '/Rent/Index?page=' + prevPage;
+        }
+    </script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script src="~/js/Rent.js"></script>

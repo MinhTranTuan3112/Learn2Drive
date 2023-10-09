@@ -1,4 +1,4 @@
-//using Driving_License.Models;
+﻿//using Driving_License.Models;
 //using Driving_License.Models.Users;
 using Driving_License.Models;
 using Driving_License.Utils;
@@ -43,6 +43,10 @@ namespace Driving_License.Controllers
             rentViewModel.VehicleList.AddRange(VehicleList.ToPagedList(page, pagesize));
             rentViewModel.BrandList = await _context.Vehicles.Select(vehicle => vehicle.Brand).Distinct().ToListAsync();
             rentViewModel.TypeList = await _context.Vehicles.Select(vehicle => vehicle.Type).Distinct().ToListAsync();
+
+            int totalPage = (VehicleList.Count + pagesize - 1) / pagesize; 
+            ViewBag.totalPage = totalPage;
+            ViewBag.currentPage = page;
             return View("~/Views/Rent.cshtml", rentViewModel);
         }
 
@@ -79,7 +83,7 @@ namespace Driving_License.Controllers
         }
         public async Task<IActionResult> RentDetail(Guid carid)
         {
-            var vehicle = _context.Vehicles.FirstOrDefault(x => x.VehicleId.Equals(carid));
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(x => x.VehicleId.Equals(carid));
             return View("/Views/RentDetail.cshtml", vehicle);
         }
 

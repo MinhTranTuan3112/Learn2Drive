@@ -27,3 +27,4 @@ var currentDateString = currentDate.toISOString().slice(0, 16);
 // Đặt giá trị mặc định cho thẻ input datetime-local
 party1Input.value = currentDateString;
 party2Input.value = currentDateString;
+
