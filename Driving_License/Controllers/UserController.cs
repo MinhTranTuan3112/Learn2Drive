@@ -88,8 +88,7 @@ namespace Driving_License.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.AccountId.Equals(usersession.AccountId));
             ViewBag.user = user;
             return View("~/Views/ExamResigter.cshtml");
-        }
+        }   
 
-        
     }
 }

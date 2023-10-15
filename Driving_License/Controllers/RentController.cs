@@ -18,12 +18,14 @@ namespace Driving_License.Controllers
     [LoginFilter]
     public class RentController : Controller
     {
+
         private readonly DrivingLicenseContext _context;
 
         public RentController(DrivingLicenseContext context)
         {
             _context = context;
         }
+
         public async Task<IActionResult> Index(int page = 1)
         {
             page = page < 1 ? 1 : page;
