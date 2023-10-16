@@ -110,7 +110,6 @@ namespace Driving_License.Controllers
         {
             string AccountID = string.Empty;
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
-
             var user = await _context.Users.FirstOrDefaultAsync(user => user.AccountId.Equals(usersession.AccountId));
             return (user is not null) ? user.UserId.ToString() : string.Empty;
         }

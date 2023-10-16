@@ -10,6 +10,7 @@ using System.Text.Json;
 namespace Driving_License.Controllers
 {
     [LoginFilter]
+
     public class UserController : Controller
     {
         private readonly DrivingLicenseContext _context;
@@ -40,7 +41,6 @@ namespace Driving_License.Controllers
             string Address = form["Address"];
             string PhoneNumber = form["PhoneNumber"];
             string BirthDate = form["BirthDate"];
-            System.Console.WriteLine("User birthdate: " + BirthDate);
             var filesend = form.Files["Avatar"];
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
             var user = await _context.Users.FirstOrDefaultAsync(u => u.AccountId.Equals(usersession.AccountId));
@@ -72,12 +72,6 @@ namespace Driving_License.Controllers
                 }
             }
             _context.Users.Update(user);
-            _context.Rents.Add(new Rent{
-                RentId = Guid.Parse("ok123"),
-                TotalRentPrice = 10000,
-                Status = "ngu"
-            }
-            );
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "User");
         }
@@ -85,11 +79,26 @@ namespace Driving_License.Controllers
         public async Task<IActionResult> ViewExamForm()
         {
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.AccountId.Equals(usersession.AccountId));
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
             ViewBag.user = user;
-            return View("~/Views/ExamResigter.cshtml");
+            var listlicense = _context.Licenses.ToList();
+            return View("~/Views/DangKyThi.cshtml", listlicense);
         }
 
-        
+        public async Task<IActionResult> RegisterExam(IFormCollection form)
+        {
+            if(form == null)
+            {
+                return NotFound();
+            }
+            Record r = new Record
+            {
+                UserId = Guid.Parse(form["userID"]),
+                LicenseId = form["LicenseID"]
+            };
+            _context.Records.Add(r);
+            _context.SaveChanges();
+            return Ok();
+        }
     }
 }

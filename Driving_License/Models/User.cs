@@ -29,6 +29,8 @@ public partial class User
 
     public virtual ICollection<Attempt> Attempts { get; set; } = new List<Attempt>();
 
+    public virtual ICollection<Record> Records { get; set; } = new List<Record>();
+
     public virtual ICollection<Rent> Rents { get; set; } = new List<Rent>();
 
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();

@@ -30,6 +30,8 @@ public partial class DrivingLicenseContext : DbContext
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
+    public virtual DbSet<Record> Records { get; set; }
+
     public virtual DbSet<Rent> Rents { get; set; }
 
     public virtual DbSet<Schedule> Schedules { get; set; }
@@ -193,6 +195,33 @@ public partial class DrivingLicenseContext : DbContext
                         j.IndexerProperty<int>("QuizId").HasColumnName("QuizID");
                         j.IndexerProperty<int>("QuestionId").HasColumnName("QuestionID");
                     });
+        });
+
+        modelBuilder.Entity<Record>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.LicenseId }).HasName("PK__Records__20A5ACA6AEEE1FF9");
+
+            entity.Property(e => e.UserId)
+                .HasDefaultValueSql("(newid())")
+                .HasColumnName("UserID");
+            entity.Property(e => e.LicenseId)
+                .HasMaxLength(10)
+                .HasColumnName("LicenseID");
+            entity.Property(e => e.PhysicalCondition)
+                .HasMaxLength(100)
+                .HasColumnName("Physical_Condition");
+            entity.Property(e => e.TestDate).HasColumnType("datetime");
+            entity.Property(e => e.TestResult).HasMaxLength(50);
+
+            entity.HasOne(d => d.License).WithMany(p => p.Records)
+                .HasForeignKey(d => d.LicenseId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Records__License__04E4BC85");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Records)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Records__UserID__03F0984C");
         });
 
         modelBuilder.Entity<Rent>(entity =>

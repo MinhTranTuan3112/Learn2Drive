@@ -1,0 +1,52 @@
+﻿@using Driving_License.Models;
+@model List<License>;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "L2D - Thông tin của (User)";
+    var user = ViewBag.user as User;
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--custom css files-->
+    <link rel="stylesheet" href="/css/styleUserProfile.css">
+    <!--Browser Icons-->
+    <!--change the name of user based on the usersession-->
+    <title>L2D - Thông tin của (User)</title>
+</head>
+
+<body>
+    <section class="profile-user-section container-xl px-4 mt-4 hidden-load">
+        <div class="needs-validation hidden-load info-form"
+             novalidate>
+            <div class="row">
+                <div class="col-xl-4 hidden-load">
+                    <div class="card mb-4 mb-xl-0">
+                        <div class="card-header text-center" style="font-weight: bold;">
+                            <h4>Register Form</h4>
+                        </div>
+                        <form action="/User/RegisterExam" method="post">
+
+                            <div class="card-body text-center">
+                                <input type="hidden" name="userID" value="@user.UserId" />
+                                <select name="LicenseID">
+                                    @foreach (var licen in Model)
+                                    {
+                                        <option value="@licen.LicenseId">@licen.LicenseId</option>
+                                    }
+                                </select>
+                            </div>
+                            <button class="btn btn-outline-success save_button" type="submit">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+
+</html>

@@ -13,5 +13,7 @@ public partial class License
 
     public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 
+    public virtual ICollection<Record> Records { get; set; } = new List<Record>();
+
     public virtual ICollection<Schedule> Schedules { get; set; } = new List<Schedule>();
 }
