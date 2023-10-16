@@ -1,4 +1,4 @@
-//using Driving_License.Models;
+﻿//using Driving_License.Models;
 //using Driving_License.Models.Users;
 using Driving_License.Models;
 using Driving_License.Utils;
@@ -18,12 +18,14 @@ namespace Driving_License.Controllers
     [LoginFilter]
     public class RentController : Controller
     {
+
         private readonly DrivingLicenseContext _context;
 
         public RentController(DrivingLicenseContext context)
         {
             _context = context;
         }
+
         public async Task<IActionResult> Index(int page = 1)
         {
             page = page < 1 ? 1 : page;
@@ -43,6 +45,10 @@ namespace Driving_License.Controllers
             rentViewModel.VehicleList.AddRange(VehicleList.ToPagedList(page, pagesize));
             rentViewModel.BrandList = await _context.Vehicles.Select(vehicle => vehicle.Brand).Distinct().ToListAsync();
             rentViewModel.TypeList = await _context.Vehicles.Select(vehicle => vehicle.Type).Distinct().ToListAsync();
+
+            int totalPage = (VehicleList.Count + pagesize - 1) / pagesize;
+            ViewBag.totalPage = totalPage;
+            ViewBag.currentPage = page;
             return View("~/Views/Rent.cshtml", rentViewModel);
         }
 
@@ -52,7 +58,7 @@ namespace Driving_License.Controllers
             string type = Form["type"];
             string brand = Form["brand"];
             string price = Form["price"];
-            string keyword = Form["keyword"]; 
+            string keyword = Form["keyword"];
             var query = _context.Vehicles.AsQueryable();
             if (!type.IsNullOrEmpty())
             {
@@ -69,7 +75,7 @@ namespace Driving_License.Controllers
             if (!keyword.IsNullOrEmpty())
             {
                 /*string pattern = string.Format("name like '%%{0}%%'", keyword);*/
-                 query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
+                query = query.Where(x => x.Brand.ToLower().Contains(keyword.ToLower()) || x.Name.ToLower().Contains(keyword.ToLower()) || x.Type.ToLower().Contains(keyword.ToLower()));
                 //query = query.Where(vehicle => vehicle.Name.Contains(pattern));
             }
             var VehicleList = await query.OrderBy(vehicle => vehicle.Name).ToListAsync();
@@ -79,7 +85,7 @@ namespace Driving_License.Controllers
         }
         public async Task<IActionResult> RentDetail(Guid carid)
         {
-            var vehicle = _context.Vehicles.FirstOrDefault(x => x.VehicleId.Equals(carid));
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(x => x.VehicleId.Equals(carid));
             return View("/Views/RentDetail.cshtml", vehicle);
         }
 
@@ -90,7 +96,7 @@ namespace Driving_License.Controllers
             string date2 = form["partydate2"];
             string totalpriceInput = form["totalpriceInput"];
             var UserIDString = await getUserIDFromSession();
-            
+
             Rent RentOrder = new Rent()
             {
                 RentId = new Guid(),
@@ -104,7 +110,7 @@ namespace Driving_License.Controllers
             await _context.Rents.AddAsync(RentOrder);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index","Rent");
+            return RedirectToAction("Index", "Rent");
         }
         public async Task<string> getUserIDFromSession()
         {

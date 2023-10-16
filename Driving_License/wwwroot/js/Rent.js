@@ -25,5 +25,30 @@ var currentDate = new Date();
 var currentDateString = currentDate.toISOString().slice(0, 16);
 
 // Đặt giá trị mặc định cho thẻ input datetime-local
-party1Input.value = currentDateString;
-party2Input.value = currentDateString;
+if (party1Input !== null) {
+    party1Input.value = currentDateString;
+}
+if (party2Input !== null) {
+    party2Input.value = currentDateString;
+}
+
+
+const rentForm = document.querySelector('.rentForm');
+const submitBtn = document.querySelector('.submit-btn');
+submitBtn.addEventListener('click', function(e) {
+    const startDate = document.querySelector('#party1').value;
+    const endDate = document.querySelector('#party2').value;
+    const hasValidFormData = (startDate !== null && endDate !== null);
+    if (!hasValidFormData) {
+        alert('Vui lòng điền thông tin thuê đầy đủ');
+        e.preventDefault();
+        return;
+    }
+    const confirmSubmit = window.confirm('Xác nhận thuê?');
+    if (confirmSubmit) {
+        rentForm.submit();
+        return;
+    } else {
+        e.preventDefault();
+    }
+});
