@@ -1,37 +1,74 @@
-﻿using Driving_License.Models;
+﻿using Driving_License.Filters;
+using Driving_License.Models;
 using Driving_License.Utils;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Driving_License.Controllers
 {
-    [Route("api/[controller]")]
+    [LoginFilter]
+    [Route("api/userapi")]
     [ApiController]
     public class UserAPIController : ControllerBase
     {
         private readonly DrivingLicenseContext _context;
+        
         public UserAPIController(DrivingLicenseContext content)
         {
             _context=content;
         }
-
-        public async Task<IActionResult> RegisterExam(IFormCollection form)
+        [HttpGet]
+        public async Task<IActionResult> returnUser()
         {
-            if (form["userID"].IsNullOrEmpty())
+            try
             {
-                return BadRequest("You are not login");
+                var userID = HttpContext.Session.GetString("usersession");
+
+                if (userID != null)
+                {
+                    return Ok(userID);
+                }
+                else
+                {
+                    return Unauthorized();
+                }
             }
-            Record r = new Record
+            catch (Exception ex)
             {
-                UserId = Guid.Parse(form["userID"]),
-                LicenseId = form["LicenseID"]
-            };
-            _context.Records.Add(r);
-            _context.SaveChanges();
-            return Ok(r);
+                return BadRequest("Lỗi trong quá trình xử lý yêu.");
+            }
         }
+
+        [HttpPost]
+        [Route("{LicenseId}")]
+        public async Task<IActionResult> RegisterExam(string LicenseId)
+        {
+            if (string.IsNullOrEmpty(LicenseId))
+            {
+                return BadRequest("LicenseId is missing or empty in the request body.");
+            }
+
+            var usersession = System.Text.Json.JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
+            var user = _context.Users.SingleOrDefault(x => x.AccountId.Equals(usersession.AccountId));
+
+            try
+            {
+                Record r = new Record
+                {
+                    UserId = user.UserId,
+                    LicenseId = LicenseId,
+                };
+
+                await _context.Records.AddAsync(r);
+                await _context.SaveChangesAsync();
+
+                return Ok($"Bạn đã đăng ký thi bằng lái xe {LicenseId} thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 
 }
