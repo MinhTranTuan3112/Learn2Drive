@@ -31,8 +31,53 @@ namespace Driving_License.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("search/{starttime}/{endtime}")]
+        public IActionResult ViewScheduleFilterTime(TimeSpan starttime, TimeSpan endtime)
+        {
+            try
+            {
+                scheduleslist = _context.Schedules.Where(x => x.StartTime >= starttime && x.EndTime <= endtime).ToList();
+                return Ok(scheduleslist);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("search/{date}")]
+        public IActionResult ViewScheduleByDate(DateTime date)
+        {
+            try
+            {
+                scheduleslist = _context.Schedules.Where(x => x.Date.HasValue && x.Date.Value.Date == date.Date).ToList();
+                return Ok(scheduleslist);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("search/{teacherid}")]
+        public IActionResult ViewScheduleByTeacher(Guid teacherid)
+        {
+            try
+            {
+                scheduleslist = _context.Schedules.Where(x => x.TeacherId.Equals(teacherid)).ToList();
+                return Ok(scheduleslist);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
-        public IActionResult DangKyHoc([FromBody]Schedule schedule)
+        public IActionResult DangKyHoc([FromBody] Schedule schedule)
         {
             try
             {
@@ -49,5 +94,7 @@ namespace Driving_License.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+
     }
 }
