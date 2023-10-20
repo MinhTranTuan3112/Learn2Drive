@@ -94,6 +94,69 @@ namespace Driving_License.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut]
+        [Route("{ScheduleId}")]
+        public async Task<IActionResult> Update(Guid ScheduleId, Schedule schedule)
+        {
+            try
+            {
+                if (ScheduleId != schedule.ScheduleId)
+                {
+                    return NotFound("Mã lịch học sửa không đúng");
+                }
+                else
+                {
+                    var findschedule = await _context.Schedules.FindAsync(schedule.ScheduleId);
+                    if (findschedule != null)
+                    {
+                        findschedule.TeacherId = schedule.TeacherId;
+                        findschedule.UserId = schedule.UserId;
+                        findschedule.LicenseId = schedule.LicenseId;
+                        findschedule.StartTime = schedule.StartTime;
+                        findschedule.EndTime = schedule.EndTime;
+                        findschedule.Price = schedule.Price;
+                        findschedule.Address = schedule.Address;
+                        findschedule.Status = schedule.Status;
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return NotFound("Mã lịch học không tìm thấy trong database");
+                    }
+                    return Ok(schedule);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpDelete]
+        [Route("{scheduleid}")]
+        public async Task<IActionResult> DeleteRent(Guid scheduleid)
+        {
+            try
+            {
+                var findschedule = await _context.Schedules.FindAsync(scheduleid);
+                if (findschedule != null)
+                {
+                    _context.Schedules.Remove(findschedule);
+                    _context.SaveChanges();
+                    return Ok(findschedule);
+                }
+                else
+                {
+                    return NotFound("Không tìm thấy lịch học cần xóa");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Lỗi trong quá trình xử lý yêu cầu.");
+            }
+        }
 
 
     }
