@@ -2,6 +2,7 @@
 using Driving_License.Models;
 using Driving_License.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Driving_License.Controllers
 {
@@ -21,15 +22,15 @@ namespace Driving_License.Controllers
         {
             try
             {
-                var userID = HttpContext.Session.GetString("usersession");
+                var user = HttpContext.Session.GetString("usersession");
 
-                if (userID != null)
+                if (user != null)
                 {
-                    return Ok(userID);
+                    return Ok(user);
                 }
                 else
                 {
-                    return Unauthorized();
+                    return NotFound("Bạn chưa đăng nhập");
                 }
             }
             catch (Exception ex)

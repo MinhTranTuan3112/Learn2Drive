@@ -18,11 +18,11 @@ namespace Driving_License.Controllers
         }
 
         [HttpGet]
-        public IActionResult ViewSchedule()
+        public async Task<IActionResult> ViewSchedule()
         {
             try
             {
-                scheduleslist = _context.Schedules.ToList();
+                scheduleslist = await _context.Schedules.ToListAsync();
                 return Ok(scheduleslist);
             }
             catch (Exception ex)
@@ -33,11 +33,11 @@ namespace Driving_License.Controllers
 
         [HttpGet]
         [Route("search/{starttime}/{endtime}")]
-        public IActionResult ViewScheduleFilterTime(TimeSpan starttime, TimeSpan endtime)
+        public async Task<IActionResult> ViewScheduleFilterTime(TimeSpan starttime, TimeSpan endtime)
         {
             try
             {
-                scheduleslist = _context.Schedules.Where(x => x.StartTime >= starttime && x.EndTime <= endtime).ToList();
+                scheduleslist = await _context.Schedules.Where(x => x.StartTime >= starttime && x.EndTime <= endtime).ToListAsync();
                 return Ok(scheduleslist);
             }
             catch (Exception ex)
@@ -48,11 +48,11 @@ namespace Driving_License.Controllers
 
         [HttpGet]
         [Route("search/{date}")]
-        public IActionResult ViewScheduleByDate(DateTime date)
+        public async Task<IActionResult> ViewScheduleByDate(DateTime date)
         {
             try
             {
-                scheduleslist = _context.Schedules.Where(x => x.Date.HasValue && x.Date.Value.Date == date.Date).ToList();
+                scheduleslist = await _context.Schedules.Where(x => x.Date.HasValue && x.Date.Value.Date == date.Date).ToListAsync();
                 return Ok(scheduleslist);
             }
             catch (Exception ex)
@@ -63,11 +63,11 @@ namespace Driving_License.Controllers
 
         [HttpGet]
         [Route("search/{teacherid}")]
-        public IActionResult ViewScheduleByTeacher(Guid teacherid)
+        public async Task<IActionResult> ViewScheduleByTeacher(Guid teacherid)
         {
             try
             {
-                scheduleslist = _context.Schedules.Where(x => x.TeacherId.Equals(teacherid)).ToList();
+                scheduleslist = await _context.Schedules.Where(x => x.TeacherId.Equals(teacherid)).ToListAsync();
                 return Ok(scheduleslist);
             }
             catch (Exception ex)
@@ -77,16 +77,16 @@ namespace Driving_License.Controllers
         }
 
         [HttpPost]
-        public IActionResult DangKyHoc([FromBody] Schedule schedule)
+        public async Task<IActionResult> RegisterSchedule([FromBody] Schedule schedule)
         {
             try
             {
                 var usersession = System.Text.Json.JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
-                var user = _context.Users.SingleOrDefault(x => x.AccountId.Equals(usersession.AccountId));
+                var user = await _context.Users.SingleOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
                 schedule.UserId = user.UserId;
-                var teacher = _context.Teachers.SingleOrDefault(x => x.TeacherId.Equals(schedule.TeacherId));
-                _context.Schedules.Add(schedule);
-                _context.SaveChanges();
+                var teacher = await _context.Teachers.SingleOrDefaultAsync(x => x.TeacherId.Equals(schedule.TeacherId));
+                await _context.Schedules.AddAsync(schedule);
+                await _context.SaveChangesAsync();
                 return Ok($"Bạn đã đăng ký học thành công khóa học của giảng viên {teacher.FullName}");
             }
             catch (Exception ex)

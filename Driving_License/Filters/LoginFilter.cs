@@ -15,6 +15,10 @@ namespace Driving_License.Filters
                 context.Result = new RedirectResult("/Login");
                 return;
             }
+            else
+            {
+                
+            }
             await base.OnActionExecutionAsync(context, next);
             //After action executing
         }

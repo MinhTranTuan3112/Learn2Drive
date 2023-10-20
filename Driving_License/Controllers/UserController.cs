@@ -81,30 +81,8 @@ namespace Driving_License.Controllers
             var usersession = JsonSerializer.Deserialize<Account>(HttpContext.Session.GetString("usersession"));
             var user = await _context.Users.FirstOrDefaultAsync(x => x.AccountId.Equals(usersession.AccountId));
             ViewBag.user = user;
-<<<<<<< HEAD
-            var listlicense = _context.Licenses.ToList();
-            return View("~/Views/DangKyThi.cshtml", listlicense);
-        }
-
-        public async Task<IActionResult> RegisterExam(IFormCollection form)
-        {
-            if(form == null)
-            {
-                return NotFound();
-            }
-            Record r = new Record
-            {
-                UserId = Guid.Parse(form["userID"]),
-                LicenseId = form["LicenseID"]
-            };
-            _context.Records.Add(r);
-            _context.SaveChanges();
-            return Ok();
-        }
-=======
             return View("~/Views/ExamResigter.cshtml");
         }   
 
->>>>>>> 5acd508149e9861d6e5451174f7ab86c26dd822f
     }
 }
