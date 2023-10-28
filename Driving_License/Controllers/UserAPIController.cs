@@ -53,13 +53,13 @@ namespace Driving_License.Controllers
 
             try
             {
-                Record r = new Record
+                ExamProfile e = new ExamProfile
                 {
                     UserId = user.UserId,
                     LicenseId = LicenseId,
                 };
 
-                await _context.Records.AddAsync(r);
+                await _context.ExamProfiles.AddAsync(e);
                 await _context.SaveChangesAsync();
 
                 return Ok($"Bạn đã đăng ký thi bằng lái xe {LicenseId} thành công");
